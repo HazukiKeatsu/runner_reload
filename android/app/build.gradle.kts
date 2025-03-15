@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.runner_reload"
+    namespace = "com.hazuki.runnerreload"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -21,21 +21,22 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.runner_reload"
+        applicationId = "com.hazuki.runnerreload"
         resValue("string", "applicationName", "Runner Reload")
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        // targetSdk = flutter.targetSdkVersion
+        targetSdk = 33
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
     signingConfigs {
-        create("release") {//发布版本的签名配置
-            storeFile = file("../runner_reload.jks")//KeyStore路径
-            keyAlias = "key"//别名
-            storePassword = System.getenv("KEYSTORE_PASSWORD")//密码
+        create("release") {
+            storeFile = file("../runner_reload.jks") // KeyStore路径
+            keyAlias = "key" // 别名
+            storePassword = System.getenv("KEYSTORE_PASSWORD") // 密码
             keyPassword = System.getenv("KEY_PASSWORD") // 密码
         }
     }
