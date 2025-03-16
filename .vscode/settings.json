@@ -3,5 +3,6 @@
     "cSpell.words": [
         "getenv",
         "runnerreload"
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
