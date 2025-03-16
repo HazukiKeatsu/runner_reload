@@ -1,4 +1,4 @@
-package com.example.runner_reload;
+package com.hazuki.runner_reload;
 
 import io.flutter.embedding.android.FlutterActivity;
 
