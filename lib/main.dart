@@ -1,209 +1,122 @@
 import 'package:flutter/material.dart';
-import 'package:runner_reload/page/record_page.dart';
-import 'package:runner_reload/page/history_page.dart';
-import 'package:runner_reload/page/settings_page.dart';
-import 'package:runner_reload/theme/default.dart';
-import 'package:runner_reload/functions/data_cache.dart';
-
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  bool _isDarkMode = false;
-  String _outputPath = "";
-  late Future<void> _settingsFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _settingsFuture = _loadSettings();
-  }
-
-  Future<void> _loadSettings() async {
-    final outputPath = await DataLoad(dataKey: "OutputPath").loadFileToData();
-    final isDarkMode = await DataLoad(dataKey: "DarkMode").loadFileToData();
-
-    setState(() {
-      _outputPath = outputPath.toString();
-      _isDarkMode = isDarkMode == 'true'; // 确保将字符串转换为布尔值
-    });
-  }
-
-  void _toggleDarkMode(bool value) {
-    setState(() {
-      _isDarkMode = value;
-    });
-    DataCache(
-      dataKey: "DarkMode",
-      dataValue: value.toString(),
-    ).saveDataToFile(); // 将布尔值转换为字符串保存
-  }
-
-  void _updateOutputPath(String path) {
-    setState(() {
-      _outputPath = path;
-    });
-    DataCache(dataKey: "OutputPath", dataValue: path).saveDataToFile();
-  }
-
-  void _errorSolveInit() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/settings.json');
-
-    file.delete();
-  }
-
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<void>(
-      future: _settingsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: Scaffold(body: Center(child: CircularProgressIndicator())),
-          ); // 或者你可以返回一个加载页面
-        } else if (snapshot.hasError) {
-          if (snapshot.error.toString().contains(
-            "FormatException: Unexpected character",
-          )) {
-            _errorSolveInit();
-          }
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: Scaffold(
-              body: Center(
-                child: Column(
-                  children: [
-                    Text('Error: ${snapshot.error}'),
-                    Text(
-                      'Error: ${snapshot.error}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        } else {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'Home',
-            theme: defaultTheme,
-            darkTheme: darkTheme,
-            themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
-            home: Framework(
-              isDarkMode: _isDarkMode,
-              toggleDarkMode: _toggleDarkMode,
-              outputPath: _outputPath,
-              updateOutputPath: _updateOutputPath,
-            ),
-          );
-        }
-      },
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        // This is the theme of your application.
+        //
+        // TRY THIS: Try running your application with "flutter run". You'll see
+        // the application has a purple toolbar. Then, without quitting the app,
+        // try changing the seedColor in the colorScheme below to Colors.green
+        // and then invoke "hot reload" (save your changes or press the "hot
+        // reload" button in a Flutter-supported IDE, or press "r" if you used
+        // the command line to start the app).
+        //
+        // Notice that the counter didn't reset back to zero; the application
+        // state is not lost during the reload. To reset the state, use hot
+        // restart instead.
+        //
+        // This works for code too, not just values: Most code changes can be
+        // tested with just a hot reload.
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      ),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class Framework extends StatefulWidget {
-  const Framework({
-    super.key,
-    required this.isDarkMode,
-    required this.toggleDarkMode,
-    required this.outputPath,
-    required this.updateOutputPath,
-  });
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
 
-  final bool isDarkMode;
-  final Function(bool) toggleDarkMode;
-  final String outputPath;
-  final Function(String) updateOutputPath;
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
+
+  final String title;
 
   @override
-  State<Framework> createState() => _FrameworkState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _FrameworkState extends State<Framework> {
-  int _selectedIndex = 0;
-  String _locationMessage = "";
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
 
-  void _onItemTapped(int index) {
+  void _incrementCounter() {
     setState(() {
-      _selectedIndex = index;
+      // This call to setState tells the Flutter framework that something has
+      // changed in this State, which causes it to rerun the build method below
+      // so that the display can reflect the updated values. If we changed
+      // _counter without calling setState(), then the build method would not be
+      // called again, and so nothing would appear to happen.
+      _counter++;
     });
-  }
-
-  void _updateLocationMessage(String message) {
-    setState(() {
-      _locationMessage = message;
-    });
-  }
-
-  String _getTitle() {
-    switch (_selectedIndex) {
-      case 0:
-        return "Runner Record";
-      case 1:
-        return "History";
-      case 2:
-        return "Settings";
-      default:
-        return "Runner Reload";
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text(
-          _getTitle(),
-          style: const TextStyle(fontWeight: FontWeight.bold),
+        // TRY THIS: Try changing the color here to a specific color (to
+        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+        // change color while the other colors stay the same.
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(widget.title),
+      ),
+      body: Center(
+        // Center is a layout widget. It takes a single child and positions it
+        // in the middle of the parent.
+        child: Column(
+          // Column is also a layout widget. It takes a list of children and
+          // arranges them vertically. By default, it sizes itself to fit its
+          // children horizontally, and tries to be as tall as its parent.
+          //
+          // Column has various properties to control how it sizes itself and
+          // how it positions its children. Here we use mainAxisAlignment to
+          // center the children vertically; the main axis here is the vertical
+          // axis because Columns are vertical (the cross axis would be
+          // horizontal).
+          //
+          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
+          // action in the IDE, or press "p" in the console), to see the
+          // wireframe for each widget.
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text('You have pushed the button this many times:'),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+          ],
         ),
       ),
-      body:
-          _selectedIndex == 0
-              ? RecordPage(
-                title: "Record",
-                locationMessage: _locationMessage,
-                updateLocationMessage: _updateLocationMessage,
-              )
-              : _selectedIndex == 1
-              ? HistoryPage(title: "History", outputPath: widget.outputPath)
-              : SettingsPage(
-                title: "Setting",
-                outputPath: widget.outputPath,
-                updateOutputPath: widget.updateOutputPath,
-                isDarkMode: widget.isDarkMode,
-                toggleDarkMode: widget.toggleDarkMode,
-              ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: _onItemTapped,
-        destinations: const <NavigationDestination>[
-          NavigationDestination(
-            icon: Icon(Icons.location_on),
-            label: 'Location',
-          ),
-          NavigationDestination(icon: Icon(Icons.history), label: 'History'),
-          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
-        ],
-      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

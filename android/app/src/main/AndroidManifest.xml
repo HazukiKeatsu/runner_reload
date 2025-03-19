@@ -18,8 +18,9 @@
     <!--Android 10以上文件权限获取-->
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
 
+
     <application
-        android:label="Runner Reload"
+        android:label="runner_reload"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

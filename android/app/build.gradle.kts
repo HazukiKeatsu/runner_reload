@@ -33,7 +33,7 @@ android {
         applicationId = "com.hazuki.runner_reload"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-
+        
         // minSdk = flutter.minSdkVersion
         // targetSdk = flutter.targetSdkVersion
         // versionCode = flutter.versionCode
@@ -60,11 +60,6 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
-            // shrinkResource = true
-            // proguardFiles(
-            //     getDefaultProguardFile("proguard-android-optimize.txt"),
-            //     "proguard-rules.pro"
-            // )
         }
     }
 }
@@ -74,7 +69,5 @@ flutter {
 }
 
 dependencies {
-    // ...
     implementation("com.google.android.material:material:1.12.0")
-    // ...
 }
