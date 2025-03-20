@@ -1,11 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:runner_reload/app/components/app_page_header.dart';
 import 'package:runner_reload/app/components/app_page_main.dart';
 import 'package:runner_reload/app/components/app_page_navigator.dart';
 import 'package:runner_reload/app/components/program_state_pointer.dart';
+import 'package:runner_reload/app/functions/init.dart';
+import 'package:runner_reload/app/state/init_state.dart';
+import 'package:runner_reload/app/state/settings_state.dart';
+import 'package:runner_reload/app/functions/load_settings.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final settings = await loadSettings();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => InitState()),
+        ChangeNotifierProvider(
+          create: (_) => SettingsState()..updateSettings(settings),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -19,15 +38,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -35,7 +52,29 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int pageIndex = 0;
+
   bool isInitialized = true;
+
+  String errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    Init init = Init();
+    final initState = Provider.of<InitState>(context, listen: false);
+
+    try {
+      await init.InitializeSettings(context); // 调用初始化设置
+      await init.GetPermission(context);
+      initState.setInitialized(true); // 初始化成功
+    } catch (error) {
+      initState.setInitialized(false, error as String); // 初始化失败
+    }
+  }
 
   void _onTapItem(int index) {
     setState(() {
@@ -43,38 +82,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _showBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Text('底部弹窗内容', style: TextStyle(fontSize: 20.0)),
-              ElevatedButton(
-                child: const Text('关闭'),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppPageHeader(
         pageIndex: pageIndex,
-        notice: ProgramStatePointer(
-          isInitialized: isInitialized,
-          showBottomSheet: _showBottomSheet,
-        ),
+        notice: const ProgramStatePointer(),
       ),
       body: AppPageMain(pageIndex: pageIndex),
       bottomNavigationBar: AppPageNavigator(

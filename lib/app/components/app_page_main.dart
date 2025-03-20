@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:runner_reload/app/pages/record_page.dart';
+import 'package:runner_reload/app/pages/settings_page.dart';
 
 class AppPageMain extends StatelessWidget {
   final int pageIndex;
@@ -13,9 +14,7 @@ class AppPageMain extends StatelessWidget {
         size: 128,
       ),
     ),
-    Center(
-      child: Icon(Icons.settings_outlined, color: Colors.black12, size: 128),
-    ),
+    SettingsPage(),
   ];
 
   AppPageMain({super.key, required this.pageIndex});
