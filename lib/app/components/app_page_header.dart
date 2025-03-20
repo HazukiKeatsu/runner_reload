@@ -11,7 +11,7 @@ class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => Size.fromHeight(100);
+  Size get preferredSize => Size.fromHeight(60);
 
   String getTitle(int index) {
     if (index == 0) {

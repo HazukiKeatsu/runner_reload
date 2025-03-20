@@ -8,19 +8,17 @@ class SettingsPage extends StatelessWidget {
     final settingsState = context.watch<SettingsState>();
     print("Settings in SettingsPage: ${settingsState.settings}"); // 添加调试日志
 
-    return Scaffold(
-      body:
-          settingsState.settings.isEmpty
-              ? Center(child: CircularProgressIndicator())
-              : ListView(
-                children:
-                    settingsState.settings.entries.map((entry) {
-                      return ListTile(
-                        title: Text(entry.key),
-                        subtitle: Text(entry.value.toString()),
-                      );
-                    }).toList(),
-              ),
-    );
+    return settingsState.settings.isEmpty
+        ? Center(child: CircularProgressIndicator())
+        : ListView(
+          padding: EdgeInsets.zero, // 移除顶部和底部的默认内边距
+          children:
+              settingsState.settings.entries.map((entry) {
+                return ListTile(
+                  title: Text(entry.key),
+                  subtitle: Text(entry.value.toString()),
+                );
+              }).toList(),
+        );
   }
 }
