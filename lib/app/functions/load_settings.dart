@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
-class LoadSettings {}
-
 Future<Map<String, dynamic>> loadSettings() async {
   final directory = await getApplicationDocumentsDirectory();
   final file = File('${directory.path}/settings.json'); // 确保路径一致
@@ -11,5 +9,5 @@ Future<Map<String, dynamic>> loadSettings() async {
     final content = await file.readAsString();
     return jsonDecode(content);
   }
-  return {};
+  throw "文件不存在";
 }
